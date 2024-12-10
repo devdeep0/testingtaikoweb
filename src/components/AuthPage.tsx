@@ -22,7 +22,11 @@ interface GameSelectionUIProps {
 
 }
 
-
+declare global {
+  interface Window {
+    ethereum?: any;  // Or use the more specific type from the artifact
+  }
+}
 const gamePreviewData = [
   { id: 1, src: "/images/image DISPALY.png", alt: "Game Preview 1" },
   { id: 2, src: "/images/TrailblazerIMG.png", alt: "Game Preview 2" },
