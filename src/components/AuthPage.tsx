@@ -1782,25 +1782,25 @@ const contractAddress = '0x16C5ff9C18314dC977ABc8E12f7915Be541ca6F3';
 
 
 const GameSelectionUI : React.FC<GameSelectionUIProps> = ({ isLoading, selectedGame, onGameSelect }) => {
-  const account = useActiveAccount();
+  const account:any = useActiveAccount();
   const [activeButton, setActiveButton] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0)
   const [balance, setBalance] = useState<string>('0');
 
   const getBalance = async () => {
-    if (typeof window.ethereum !== 'undefined' && account) {
+    if (typeof window.ethereum !== 'undefined') {
       try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
         const provider = new ethers.BrowserProvider(window.ethereum);
-        const contract = new ethers.Contract(
-          contractAddress,
-          contractABI,
-          provider
-        );
-        const balanceResult = await contract.balanceOf(account.address);
-        setBalance(ethers.formatEther(balanceResult));
+        const newSigner = await provider.getSigner();
+        const taikoContract = new ethers.Contract(contractAddress, contractABI, newSigner);
+        const balance = await taikoContract.getBalance(account.address);
+        setBalance(balance);
       } catch (error) {
-        console.error("Error fetching balance:", error);
+        console.error("Error initializing ethers:", error);
       }
+    } else {
+      console.log('Please install MetaMask!');
     }
   };
 

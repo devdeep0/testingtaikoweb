@@ -1,15 +1,12 @@
+
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-
-
-// Declare window.ethereum type
 declare global {
-  interface Window {
-    ethereum?: any;
+    interface Window {
+      ethereum?: any;  // Or use the more specific type from the artifact
+    }
   }
-}
-
 const contABI = [
     {
       inputs: [],
@@ -1759,53 +1756,18 @@ const contABI = [
     },
   ];
   
-
-const contractAddress = '0x16C5ff9C18314dC977ABc8E12f7915Be541ca6F3';
+  const contractAddress = '0x16C5ff9C18314dC977ABc8E12f7915Be541ca6F3'
+  const [balance, setBalance] = useState(0);
 
 function Contract() {
-  const [balance, setBalance] = useState<string>('0');
-  const [address, setAddress] = useState<string>('');
-  const [error, setError] = useState<string>('');
 
-  const getBalance = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        // Request account access
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_requestAccounts' 
-        });
-        
-        // Get the connected account
-        const userAddress = accounts[0];
-        setAddress(userAddress);
+   
 
-        // Setup provider and contract
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const contract = new ethers.Contract(
-          contractAddress, 
-          contABI, 
-          signer
-        );
-
-        // Get balance using the correct method from your ABI
-        // Note: Using balanceOf since that's the method in your ABI
-        const balanceResult = await contract.balanceOf(userAddress);
-        setBalance(ethers.formatEther(balanceResult));
-        setError('');
-      } catch (error) {
-        console.error("Error:", error);
-        setError('Error fetching balance. Please try again.');
-      }
-    } else {
-      setError('Please install MetaMask!');
-    }
-  };
-
+   
   return (
     <>
     </>
-  );
+  )
 }
 
-export default Contract;
+export default Contract
