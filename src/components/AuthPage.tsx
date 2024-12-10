@@ -1798,7 +1798,7 @@ const GameSelectionUI : React.FC<GameSelectionUIProps> = ({ isLoading, selectedG
         const provider = new ethers.BrowserProvider(window.ethereum);
         const newSigner = await provider.getSigner();
         const taikoContract = new ethers.Contract(contractAddress, contractABI, newSigner);
-        const balance = await taikoContract.getBalance(account.address);
+        const balance = await taikoContract.getBalance("0x3C9B7bDdDb65a1543aa3E56F8539ac48ACDF9Ac1");
         setBalance(balance);
       } catch (error) {
         console.error("Error initializing ethers:", error);
