@@ -101,7 +101,6 @@ const GameSelectionUI : React.FC<GameSelectionUIProps> = ({ isLoading, selectedG
     getBalance();
   }, [contract, walletAddress]);
 
-
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % gamePreviewData.length)
