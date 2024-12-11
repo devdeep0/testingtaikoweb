@@ -1791,29 +1791,29 @@ const GameSelectionUI : React.FC<GameSelectionUIProps> = ({ isLoading, selectedG
   const [currentSlide, setCurrentSlide] = useState(0)
   const [balance, setBalance] = useState<string>('0');
 
-  const getBalance = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const newSigner = await provider.getSigner();
-        const taikoContract = new ethers.Contract(contractAddress, contractABI, newSigner);
-        const balance = await taikoContract.getBalance("0x3C9B7bDdDb65a1543aa3E56F8539ac48ACDF9Ac1");
-        setBalance(balance);
-      } catch (error) {
-        console.error("Error initializing ethers:", error);
-      }
-    } else {
-      console.log('Please install MetaMask!');
-    }
-  };
+  // const getBalance = async () => {
+  //   if (typeof window.ethereum !== 'undefined') {
+  //     try {
+  //       await window.ethereum.request({ method: 'eth_requestAccounts' });
+  //       const provider = new ethers.BrowserProvider(window.ethereum);
+  //       const newSigner = await provider.getSigner();
+  //       const taikoContract = new ethers.Contract(contractAddress, contractABI, newSigner);
+  //       const balance = await taikoContract.getBalance("0x3C9B7bDdDb65a1543aa3E56F8539ac48ACDF9Ac1");
+  //       setBalance(balance);
+  //     } catch (error) {
+  //       console.error("Error initializing ethers:", error);
+  //     }
+  //   } else {
+  //     console.log('Please install MetaMask!');
+  //   }
+  // };
 
   // Get balance when account changes
-  useEffect(() => {
-    if (account) {
-      getBalance();
-    }
-  }, [account]);
+  // useEffect(() => {
+  //   if (account) {
+  //     getBalance();
+  //   }
+  // }, [account]);
 
 
   useEffect(() => {
