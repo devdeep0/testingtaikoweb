@@ -27,7 +27,7 @@ const gamePreviewData = [
   { id: 3, src: "/images/image DISPALY.png", alt: "Game Preview 3" },
 ];
 
-const contractAddress = '0x16C5ff9C18314dC977ABc8E12f7915Be541ca6F3';
+// const contractAddress = '0x16C5ff9C18314dC977ABc8E12f7915Be541ca6F3';
 
 const GameSelectionUI: React.FC<GameSelectionUIProps> = ({ isLoading, selectedGame, onGameSelect }) => {
   const address = useAddress(); // Use thirdweb's useAddress hook
@@ -36,10 +36,10 @@ const GameSelectionUI: React.FC<GameSelectionUIProps> = ({ isLoading, selectedGa
   const [error, setError] = useState<string | null>(null);
 
   // Get contract instance
-  const { contract } = useContract(contractAddress);
+  // const { contract } = useContract(contractAddress);
   
   // Use thirdweb's useBalance hook
-  const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance(address);
+  // const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance(address);
 
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -81,9 +81,9 @@ const GameSelectionUI: React.FC<GameSelectionUIProps> = ({ isLoading, selectedGa
                 <p className="text-sm text-zinc-400">Connect Wallet</p>
               )}
               
-              {!isBalanceLoading && tokenBalance && (
+              {/* {!isBalanceLoading && tokenBalance && (
                 <span className="ml-2">{tokenBalance.displayValue} {tokenBalance.symbol}</span>
-              )}
+              )} */}
             </div>
           </div>
           <div className="text-sm font-semibold tracking-widest text-pink-500 mt-3">GAMES</div>
