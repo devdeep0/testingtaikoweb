@@ -26,14 +26,19 @@ export default function RootLayout({
         className={inter.className}
         style={{ overflow: "auto", height: "100%", margin: 0 }}
       >
-         <Suspense fallback={
-          <div className="h-screen bg-black w-full flex items-center justify-center">
-         <div className="font-bold font-zk text-white">Please wait...</div>
-          </div>
-         }>
-        <ConditionalLayout>
-        <Providers>{children}</Providers></ConditionalLayout>
-        </Suspense>
+        <main> {/* Add this wrapper */}
+          <Suspense
+            fallback={
+              <div className="h-screen bg-black w-full flex items-center justify-center">
+                <div className="font-bold font-zk text-white">Please wait...</div>
+              </div>
+            }
+          >
+            <ConditionalLayout>
+              <Providers>{children}</Providers>
+            </ConditionalLayout>
+          </Suspense>
+        </main>
       </body>
     </html>
   );

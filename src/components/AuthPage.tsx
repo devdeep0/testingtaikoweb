@@ -1,149 +1,93 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import  { Suspense } from 'react';
-import { createWallet, inAppWallet } from "thirdweb/wallets";
-import { AutoConnect } from "thirdweb/react";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-
-import { useActiveAccount } from "thirdweb/react";
-
-import { shortenAddress } from "thirdweb/utils";
-import { Button } from "@headlessui/react";
-import { client, wallet } from "@/app/constant";
-import { useContract, useContractRead } from "@thirdweb-dev/react";
+import { Suspense } from 'react';
+import { useAddress, useContract, useBalance } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-
+import { Button } from "@headlessui/react";
 import Link from "next/link";
-import { BarChart3, Home, Menu } from 'lucide-react'
+import { BarChart3, Home, Menu } from 'lucide-react';
+
 interface GameSelectionUIProps {
   isLoading: boolean;
   selectedGame: string;
   onGameSelect: (game: string) => void;
-
-
 }
 
 declare global {
   interface Window {
-    ethereum?: any;  // Or use the more specific type from the artifact
+    ethereum?: any;
+    Telegram?: any;
   }
 }
+
 const gamePreviewData = [
   { id: 1, src: "/images/image DISPALY.png", alt: "Game Preview 1" },
   { id: 2, src: "/images/TrailblazerIMG.png", alt: "Game Preview 2" },
   { id: 3, src: "/images/image DISPALY.png", alt: "Game Preview 3" },
-]
-
-  // Taiko chain configuration
-  const taikoMainnet = {
-    chainId: 167004,
-    rpc: ["https://rpc.taiko.xyz"],
-    nativeCurrency: {
-      decimals: 18,
-      name: "Ether",
-      symbol: "ETH",
-    },
-    shortName: "taiko",
-    slug: "taiko",
-    name: "Taiko",
-    testnet: true,
-  };
+];
 
 const contractAddress = '0x16C5ff9C18314dC977ABc8E12f7915Be541ca6F3';
 
-
-const GameSelectionUI : React.FC<GameSelectionUIProps> = ({ isLoading, selectedGame, onGameSelect }) => {
-  const account:any = useActiveAccount();
+const GameSelectionUI: React.FC<GameSelectionUIProps> = ({ isLoading, selectedGame, onGameSelect }) => {
+  const address = useAddress(); // Use thirdweb's useAddress hook
   const [activeButton, setActiveButton] = useState('');
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [balance, setBalance] = useState<string>('0');
-  const [walletAddress, setWalletAddress] = useState<string>("");
-
-  const { contract } = useContract(contractAddress);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  setWalletAddress(account.address);
-
-  const getBalance = async () => {
-    if (!walletAddress) return;
-
-    setError(null);
-
-    try {
-      // Initialize SDK with RPC provider
-      const provider = new ethers.providers.JsonRpcProvider(taikoMainnet.rpc[0]);
-      const sdk = new ThirdwebSDK(provider, {
-        supportedChains: [{
-          rpc: taikoMainnet.rpc,
-          chainId: taikoMainnet.chainId,
-          nativeCurrency: taikoMainnet.nativeCurrency,
-          slug: taikoMainnet.slug
-        }]
-      });
-      
-      // Get the contract
-      const contract = await sdk.getContract(contractAddress);
-      
-      // Call balanceOf
-      const result = await contract.call("balanceOf", [walletAddress]);
-      
-      // Format the balance
-      const formattedBalance = ethers.utils.formatUnits(result, 18);
-      setBalance(formattedBalance);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error fetching balance");
-    } 
-  };
+  // Get contract instance
+  const { contract } = useContract(contractAddress);
   
-  // Get balance when account changes
-  useEffect(() => {
-    getBalance();
-  }, [contract, walletAddress]);
+  // Use thirdweb's useBalance hook
+  const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance(contractAddress);
+
+  const shortenAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % gamePreviewData.length)
-    }, 5000) // Change slide every 5 seconds
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % gamePreviewData.length);
+    }, 5000); // Change slide every 5 seconds
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="h-screen bg-black text-white bg-[url('/bg/BG.png')] bg-cover bg-center">
-    <div className="mx-auto max-w-md bg-transparent p-6 pb-20">
-      {/* Header */}
-      <div className="mb-6 text-center">
-        <div className="mb-1 flex justify-center">
+      <div className="mx-auto max-w-md bg-transparent p-6 pb-20">
+        {/* Header */}
+        <div className="mb-6 text-center">
+          <div className="flex items-center justify-center gap-1">
+            <div className="h-[1px] w-12 bg-pink-500/50" />
+            <Image
+              src="/logo/taiko-v-blk 1.png"
+              alt="Taiko Logo"
+              width={80}
+              height={80}
+              className="mb-1"
+            />
+            <div className="h-[1px] w-12 bg-pink-500/50" />
+            
+            <div className="flex justify-center items-center h-full pr-2">
+              {address ? (
+                <Button
+                  onClick={() => window.Telegram?.WebApp.openLink(`https://etherscan.io/address/${address}`)}
+                  className="inline-flex items-center gap-2 rounded-[4px] font-raj underline underline-offset-4 decoration-[#19AE00] decoration-4 decoration-solid bg-transparent border-2 border-white py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
+                >
+                  {shortenAddress(address)}
+                </Button>
+              ) : (
+                <p className="text-sm text-zinc-400">Connect Wallet</p>
+              )}
+              
+              {!isBalanceLoading && tokenBalance && (
+                <span className="ml-2">{tokenBalance.displayValue} {tokenBalance.symbol}</span>
+              )}
+            </div>
+          </div>
+          <div className="text-sm font-semibold tracking-widest text-pink-500 mt-3">GAMES</div>
         </div>
-        <div className="flex items-center justify-center gap-1">
-          <div className="h-[1px] w-12 bg-pink-500/50" />
-          <Image
-            src="/logo/taiko-v-blk 1.png"
-            alt="Taiko Logo"
-            width={80}
-            height={80}
-            className="mb-1"
-          />
-          <div className="h-[1px] w-12 bg-pink-500/50" />
-          <AutoConnect client={client} wallets={[wallet]}/>
- <div className="flex justify-center items-center h-full pr-2">
- {/* <Button className="inline-flex items-center gap-2 rounded-[4px] font-raj underline underline-offset-4 decoration-[#19AE00] decoration-4 decoration-solid bg-transparent border-2 border-white py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">0x181871415415418148</Button>   */}
-
-          {account ? 
-            (
-            <> 
-            <Button onClick={() => (window as any).Telegram.WebApp.openLink(`https://etherscan.io/address/${account.address}`)} className="inline-flex items-center gap-2 rounded-[4px] font-raj underline underline-offset-4 decoration-[#19AE00] decoration-4 decoration-solid bg-transparent border-2 border-white py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">{shortenAddress(account.address)}</Button>  
-            </>
-            ) 
-          : (
-              <p className="text-sm text-zinc-400">fetching smart account</p>
-            )}      
-<span>{balance} TKIO</span>
-        </div>
-    
-        </div>
-        <div className="text-sm font-semibold tracking-widest text-pink-500 mt-3">GAMES</div>
-      </div>
 
       {/* Game Preview Card */}
       <div className="relative mb-4 overflow-hidden rounded-2xl border border-pink-500/30 bg-gradient-to-br from-pink-500/10 to-transparent">
