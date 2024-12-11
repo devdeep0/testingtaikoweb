@@ -39,7 +39,7 @@ const GameSelectionUI: React.FC<GameSelectionUIProps> = ({ isLoading, selectedGa
   const { contract } = useContract(contractAddress);
   
   // Use thirdweb's useBalance hook
-  const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance(contractAddress);
+  const { data: tokenBalance, isLoading: isBalanceLoading } = useBalance(address);
 
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
